@@ -10,9 +10,35 @@
 
 @implementation AppDelegate
 
+@synthesize username;
+@synthesize password;
+@synthesize authButton;
+@synthesize responseField;
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Insert code here to initialize your application
+    NSURL *url = [NSURL URLWithString:@"http://fwol.in"];
+    someClient = [[AFHTTPClient alloc] initWithBaseURL:url];
+}
+
+- (IBAction)authenticateClicked:(id)sender {
+    [someClient setAuthorizationHeaderWithUsername:[username stringValue] password:[password stringValue]];
+    NSURLRequest *request = [someClient requestWithMethod:@"GET" path:@"/api/me" parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSString *response = [NSString stringWithString:operation.responseString];
+        [responseField setStringValue:response];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [responseField setStringValue:@"Error!"];
+        NSLog(@"Error! %@", operation.error);
+    }];
+    
+    [[[NSOperationQueue alloc] init] addOperation:operation];
+    
+    
+    
 }
 
 @end
