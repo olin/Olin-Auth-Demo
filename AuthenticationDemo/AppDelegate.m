@@ -18,13 +18,17 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Insert code here to initialize your application
-    NSURL *url = [NSURL URLWithString:@"http://fwol.in"];
+    NSURL *url = [NSURL URLWithString:@"https://ohack-fwolin.herokuapp.com"];
     someClient = [[AFHTTPClient alloc] initWithBaseURL:url];
 }
 
-- (IBAction)authenticateClicked:(id)sender {
-    [someClient setAuthorizationHeaderWithUsername:[username stringValue] password:[password stringValue]];
-    NSURLRequest *request = [someClient requestWithMethod:@"GET" path:@"/api/me" parameters:nil];
+- (IBAction)authenticateClicked:(id)sender {    
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                            [username stringValue], @"username",
+                            [password stringValue], @"password",
+                            nil];
+    
+    NSURLRequest *request = [someClient requestWithMethod:@"POST" path:@"/api/exchangelogin" parameters:params];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -36,8 +40,6 @@
     }];
     
     [[[NSOperationQueue alloc] init] addOperation:operation];
-    
-    
     
 }
 
